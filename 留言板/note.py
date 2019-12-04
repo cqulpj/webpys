@@ -7,48 +7,51 @@ import sqlite3 as db
 
 urls = (
         '/', 'index',
-        '/add', 'add'
+        '/add', 'add',
+        '/(\d+)', 'index'
         )
 
+perp = 4
 render = web.template.render('templates')
 
 class index:
-    def GET(self):
+    def GET(self, page=1):
         #实例化sqldb，然后读取内容
         s = ''
-        db = sqldb()
-        rt = db.cu.execute('''
-            select id, content, date, name from msgs
-            ''')
-        rc = db.cu.fetchall()
-        #print('rc:', rc)
-        #print(dir(rc))
-        return render.index(rc)
+        db = web.database(dbn='sqlite', db='./msg.db')
+        
+        page = 1 if (page=='') else int(page)
+        offset = (page - 1) * perp
+        rt = db.select('msgs', order='id', what='id, content, date, name', offset=offset, limit=perp)
+        rc = db.query("SELECT COUNT(*) AS count FROM msgs")[0]
+        print(rc)
+        pages = rc.count / perp
+        pages = (pages + 1) if (rc.count % perp > 0) else pages
+        if page > pages:
+            raise web.seeother('/')
+        else:
+            return render.index(rcs=rt, pages=pages, page=page)
 
 class add:
     def POST(self):
-        j = 0
+        db = web.database(dbn='sqlite', db='./msg.db')
         i = web.input('content')
         n = web.input('user')
-        print(i, n)
-        date = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-        db = sqldb()
-        rt = db.cu.execute('''
-            select * from msgs
-            ''')
-        rc = db.cu.fetchall()
-        for k in rc:
-            j = k[0] + 1
-        t = (j, n.user, date, i.content)
-        print('t=:', t)
-        db.cu.execute('''
-            insert into msgs values(?,?,?,?)''', t)
-        db.conn.commit()
-        return web.seeother('/')
+        #print(i, n)
+        now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+        rc = db.query("SELECT COUNT(*) AS count FROM msgs")[0]
+        db.insert('msgs', id=rc.count+1, name=n.user, date=now, content=i.content)
+
+        cp = (rc.count+1) / perp
+        cp = (cp + 1) if ((rc.count+1) % perp > 0) else cp
+        print('cnt=', rc.count+1, 'cp=', cp)
+        return web.seeother('/'+str(cp))
 
     def GET(self):
         return web.seeother('/')
 
+
+# 初始化数据库
 class sqldb:
     def __init__(self):
         self.conn = db.connect("./msg.db")
@@ -66,6 +69,7 @@ class sqldb:
             print(e)
 
 if __name__ == '__main__':
+    sqldb()
     app = web.application(urls, globals())
     app.run()
 

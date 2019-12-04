@@ -1,6 +1,7 @@
-$def with (rcs)
+$def with (rcs, page, pages)
 
 $ cs = ('success', 'danger', 'warning', 'info')
+$ keys = ('id', 'content', 'date', 'name')
 
 <!doctype html>
 <html>
@@ -50,13 +51,40 @@ $ cs = ('success', 'danger', 'warning', 'info')
                         <tbody>
                             $for row in rcs:
                                 <tr class=$cs[loop.index0 % 4]>
-                                $for fd in row:
+                                $for fd in range(4):
                                     <td>
-                                    $fd 
+                                    $row[keys[loop.index0]]
                                     </td>
                                 </tr>
                         </tbody>
                     </table>
+                    <ul class="pagination">
+                        $if page==1:
+                            <li class="disabled">
+                                <a href="/">Prev</a>
+                            </li>
+                        $else:
+                            <li>
+                                <a href="/$(page-1)">Prev</a>
+                            </li>
+                        $for pi in range(1, pages+1):
+                            $if pi == page:
+                                <li class="active">
+                                    <a href="/$pi">$pi</a>
+                                </li>
+                            $else:
+                                <li>
+                                    <a href="/$pi">$pi</a>
+                                </li>
+                        $if page==pages:
+                            <li class="disabled">
+                                 <a href="/">Next</a>
+                            </li>
+                        $else:
+                            <li>
+                                 <a href="/$(page+1)">Next</a>
+                            </li>
+                    </ul>
                 </div>
                 <div class="col-md-5 column">
                     <form class="form-horizontal" role="form" method="post" action="/add">
