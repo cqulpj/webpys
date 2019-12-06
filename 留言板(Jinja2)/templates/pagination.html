@@ -1,0 +1,36 @@
+<ul class="pagination">
+    {% if page==1 %}
+        <li class="disabled">
+            <a href="/">Prev</a>
+        </li>
+    {% else %}
+        <li>
+            <a href="/{{page-1}}">Prev</a>
+        </li>
+    {% endif %}
+    {% for pi in page_iter(page, pages) %}
+        {% if pi==None %}
+            <li class="disable">
+                <a href="#">&hellip;</a>
+            </li>
+        {% elif pi==page %}
+            <li class="active">
+                <a href="/{{pi}}">{{ pi }}</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="/{{pi}}">{{ pi }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+    {% if page==pages %}
+        <li class="disabled">
+             <a href="/">Next</a>
+        </li>
+    {% else %}
+        <li>
+            <a href="/{{ page+1 }}">Next</a>
+        </li>
+    {% endif %}
+</ul>
+
