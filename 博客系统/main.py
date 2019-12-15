@@ -10,6 +10,7 @@ import models
 # 路径映射
 urls = (
         '/', 'index',
+        '/post/(\d+)', 'post',
         '/install', 'install',
         '/login', 'login',
         '/register', 'register',
@@ -48,6 +49,11 @@ render._lookup.globals.update(
 class index:
     def GET(self):
         return render.index()
+
+# 文章视图函数
+class post:
+    def GET(self, postid=1):
+        return render.post()
 
 # 安装/初始化数据库视图函数
 class install:
