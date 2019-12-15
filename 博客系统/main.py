@@ -13,21 +13,11 @@ urls = (
         '/install', 'install',
         '/login', 'login',
         '/register', 'register',
+        '/logout', 'logout',
         )
 
 # 分页
 perp = 4
-
-# 使用Jinja2模板系统
-render = render_jinja(
-        'templates',
-        encoding='utf-8',
-        )
-
-# 增加全局函数
-render._lookup.globals.update(
-        page_iter = dealops.page_iter,
-        )
 
 # 数据库
 db = models.sqldb()
@@ -40,6 +30,19 @@ app = web.application(urls, globals())
 
 # 使用session
 session = web.session.Session(app, web.session.DiskStore('sessions'))
+session.logged_in = False
+
+# 使用Jinja2模板系统
+render = render_jinja(
+        'templates',
+        encoding='utf-8',
+        )
+
+# 增加全局函数
+render._lookup.globals.update(
+        page_iter = dealops.page_iter,
+        session = session,
+        )
 
 # 首页视图函数
 class index:
@@ -50,9 +53,9 @@ class index:
 class install:
     def GET(self):
         if db.initdb():
-            return '<head><meta charset="utf-8"></head><body>数据库初始化成功</body>'
+            return '<head><meta charset="utf-8"></head><body><h1>数据库初始化成功</h1></body>'
         else:
-            return '<head><meta charset="utf-8"></head><body>数据库已存在</body>'
+            return '<head><meta charset="utf-8"></head><body><h1>数据库已存在</h1></body>'
 
 # 登录
 class login:
@@ -68,11 +71,18 @@ class login:
         if (ret!=None) and (ret.password == pswd):
             session.logged_in = True
             session.user = user
+            session.userid = ret.id
             print('ok,loginin')
             raise web.seeother('/')
         else:
             print('fail,error')
             return render.login(LoginTips=u'用户名或密码错误')
+
+# 注销
+class logout:
+    def GET(self):
+        session.logged_in = False
+        raise web.seeother('/')
 
 # 注册用户
 class register:
