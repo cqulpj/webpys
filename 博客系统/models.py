@@ -84,6 +84,16 @@ class sqldb:
             print(e)
             return False
 
+    # 查询类别并返回
+    def query_categorys(self):
+        try:
+            wdb = web.database(dbn='sqlite', db='./blogcms.db')
+            rt = wdb.select('category', what='name', order='id')
+            return rt
+        except Exception as e:
+            print(e)
+            return None
+
 if __name__ == '__main__':
     mdb = sqldb()
     mdb.initdb()

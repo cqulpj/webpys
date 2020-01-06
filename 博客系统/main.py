@@ -15,6 +15,7 @@ urls = (
         '/login', 'login',
         '/register', 'register',
         '/logout', 'logout',
+        '/createpost', 'createpost',
         )
 
 # 分页
@@ -106,6 +107,12 @@ class register:
             return '<head><meta charset="utf-8"></head><body><h1>注册成功！</h1></body>'
         else:
             return '<head><meta charset="utf-8"></head><body><h1>注册失败.</h1></body>'
+
+# 增加博文
+class createpost:
+    def GET(self):
+        cts = db.query_categorys()
+        return render.createpost(cates=cts)
     
 if __name__ == '__main__':
     app.run()
