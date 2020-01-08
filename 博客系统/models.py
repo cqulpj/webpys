@@ -94,10 +94,57 @@ class sqldb:
             print(e)
             return None
 
+    # 增加博文
+    def create_post(self, userid, title, content, category):
+        try:
+            wdb = web.database(dbn='sqlite', db='./blogcms.db')
+            rt = wdb.insert('post', authorid=userid, title=title, content=content, category=category)
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    # 查询文章总数
+    def count_posts(self):
+        try:
+            wdb = web.database(dbn='sqlite', db='./blogcms.db')
+            rt = wdb.query('select count(*) as total from post')
+            return rt[0].total
+        except Exception as e:
+            print(e)
+            return None
+
+    # 查询某页博文
+    # perp:每页文章数
+    # cur:第几页
+    def query_posts(self, perp, cur):
+        try:
+            wdb = web.database(dbn='sqlite', db='./blogcms.db')
+            rt = wdb.query('select post.id,title,content,post.createat,user.name from \
+                    post,user where post.authorid=user.id order by post.createat desc \
+                    limit $lm offset $of', vars={'lm':perp, 'of':(cur-1)*perp})
+            return rt
+        except Exception as e:
+            print(e)
+            return None
+
+    # 根据ID查询某篇博文
+    def get_post_byID(self, postid):
+        pid = int(postid)
+        try:
+            wdb = web.database(dbn='sqlite', db='./blogcms.db')
+            rt = wdb.query('select post.id,title,content,post.createat,user.name from \
+                    post,user where post.authorid=user.id and post.id=$pid', vars={'pid':pid})
+            return rt[0]
+        except Exception as e:
+            print(e)
+            return None
+
 if __name__ == '__main__':
     mdb = sqldb()
-    mdb.initdb()
-    print mdb.query_user_byname('lpj')
-    print mdb.query_user_byname('lpp')
-    print mdb.create_user('wlm', '123456', '')
+    #mdb.initdb()
+    #print mdb.query_user_byname('lpj')
+    #print mdb.query_user_byname('lpp')
+    #print mdb.create_user('wlm', '123456', '')
+    print mdb.get_post_byID(3)
 

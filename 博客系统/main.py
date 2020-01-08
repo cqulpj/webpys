@@ -10,6 +10,8 @@ import models
 # 路径映射
 urls = (
         '/', 'index',
+        '/index.html', 'index',
+        '/page/(\d+)', 'page',
         '/post/(\d+)', 'post',
         '/install', 'install',
         '/login', 'login',
@@ -18,8 +20,8 @@ urls = (
         '/createpost', 'createpost',
         )
 
-# 分页
-perp = 4
+# 每页博文数
+perp = 3
 
 # 数据库
 db = models.sqldb()
@@ -49,12 +51,24 @@ render._lookup.globals.update(
 # 首页视图函数
 class index:
     def GET(self):
-        return render.index()
+        raise web.seeother('/page/1')
+        #return render.index()
+
+# 首页/某页博文
+class page:
+    def GET(self, page=1):
+        cur = int(page)
+        total = db.count_posts()
+        pages = (total / perp) + (total % perp != 0)
+        pts = db.query_posts(perp, cur)
+        return render.index(cp=cur, pages=pages, pts=pts)
 
 # 文章视图函数
 class post:
     def GET(self, postid=1):
-        return render.post()
+        post = db.get_post_byID(postid)
+        post.content = post.content.replace('\n', '<br>')
+        return render.post(post=post)
 
 # 安装/初始化数据库视图函数
 class install:
@@ -113,6 +127,21 @@ class createpost:
     def GET(self):
         cts = db.query_categorys()
         return render.createpost(cates=cts)
+
+    def POST(self):
+        if session.logged_in:
+            i = web.input()
+            title = i.get('title')
+            content = i.get('content')
+            cate = i.get('category')
+            userid = session.userid
+            ret = db.create_post(userid, title, content, cate)
+            if ret:
+                return '<head><meta charset="utf-8"></head><body><h1>添加成功！</h1></body>'
+            else:
+                return '<head><meta charset="utf-8"></head><body><h1>添加失败.</h1></body>'
+        else:
+            raise web.seeother('/login')
     
 if __name__ == '__main__':
     app.run()
