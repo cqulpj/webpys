@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>小工具集--by LPJ</title>
+        <!-- Custom fonts for this template-->
+        <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+        <!-- Custom styles for this template-->
+        <link href="/static/css/sb-admin.css" rel="stylesheet">
+        <!-- Bootstrap core JavaScript-->
+        <script src="/static/vendor/jquery/jquery.min.js"></script>
+        <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+        <script>
+            $(document).ready(function(){
+                // hex转ascii字符串
+                $("#btn4hexascii").click(function(){
+                    //alert("data:" + $("#src4hexascii").val());
+                    $.post("/api/hexascii", {
+                        data: $("#src4hexascii").val(),
+                        ops: $("#ops4hexascii").get(0).selectedIndex
+                    },
+                        function(data, status) {
+                            if(data.status == 'ok') {
+                                $("#dst4hexascii").val(data.data);
+                            } else {
+                                alert("数据错误.");
+                            }
+                        },
+                        'json');
+                });
+
+                // hex进行base64编解码
+                $("#btn4base64").click(function(){
+                    $.post("/api/hexbase64", {
+                        data: $("#src4base64").val(),
+                        ops: $("#ops4base64").get(0).selectedIndex
+                    },
+                        function(data, status) {
+                            if(data.status == 'ok') {
+                                $("#dst4base64").val(data.data);
+                            } else {
+                                alert("数据错误.");
+                            }
+                        },
+                        'json');
+                });
+            });
+        </script>
+
+    </head>
+
+    <body class="bg-dark">
+        <div class="container">
+            <div class="row my-4">
+
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-header">十六进制/ASCII字符互转</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" id="src4hexascii" class="form-control" placeholder="待转换" required="required" autofocus="autofocus">
+                                    <label for="src4hexascii">待转换</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" id="dst4hexascii" class="form-control" placeholder="转换结果" required="required" autofocus="autofocus">
+                                    <label for="dst4hexascii">转换结果</label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <select id="ops4hexascii" class="form-control">
+                                        <option>HEX转字符串</option>
+                                        <option>字符串转HEX</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <button id="btn4hexascii" class="btn btn-secondary btn-block" type="button">转换</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mt-5">
+                        <div class="card-header">十六进制/BASE64编解码</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" id="src4base64" class="form-control" placeholder="待转换" required="required" autofocus="autofocus">
+                                    <label for="src4base64">待转换</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-label-group">
+                                    <input type="text" id="dst4base64" class="form-control" placeholder="转换结果" required="required" autofocus="autofocus">
+                                    <label for="dst4base64">转换结果</label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col-md-6">
+                                    <select id="ops4base64" class="form-control">
+                                        <option>字符串直接BASE64编码</option>
+                                        <option>hex形式数组BASE64编码</option>
+                                        <option>BASE64解码为字符串</option>
+                                        <option>BASE64解码为hex形式数组</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <button id="btn4base64" class="btn btn-secondary btn-block" type="button">编解码</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+
+</html>
