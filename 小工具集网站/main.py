@@ -57,11 +57,11 @@ class hexascii:
                 for i in range(0, len(ss), 2):
                     tt = int(ss[i:i+2], 16)
                     cs.append(chr(tt))
-                ret['data'] = ''.join(cs)
+                ret['data'] = ''.join(cs).decode('gbk')
                 ret['status'] = 'ok'
             # ascii字符串转hex
             elif pld.ops == '1':
-                ss = pld.data.strip()
+                ss = pld.data.strip().encode('gbk')
                 d = [hex(ord(i)).upper()[2:4] for i in ss]
                 ss = ' '.join(d)
                 ret['data'] = ss
