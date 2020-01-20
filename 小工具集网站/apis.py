@@ -4,6 +4,7 @@ import web
 import time
 import json
 import base64
+import dealops
 
 # 下面是一系列数据转换或编解码API
 # hex与ascii字符串互转
@@ -85,4 +86,30 @@ class hexbase64:
         web.header('content-type', 'text/json')
         return json.dumps(ret)
 
+# 查询汉字内码并转换为HEX形式
+# 支持unicode、gbk、utf-8三种编码格式查询
+class code2hex:
+    def POST(self):
+        pld = web.input()
+        print(pld)
+        ret = {'data':'', 'status':'ok'}
+        try:
+            # 查询Unicode编码
+            if pld.ops.lower() == 'unicode':
+                ret['data'] = dealops.unicode2hex(pld.data)
+            # 查询gbk编码
+            elif pld.ops.lower() == 'gbk':
+                ret['data'] = dealops.unicode2hex(pld.data, 'gbk')
+            # 查询utf-8编码
+            elif pld.ops.lower() in ('utf-8', 'utf8'):
+                ret['data'] = dealops.unicode2hex(pld.data, 'utf-8')
+            # 无效操作
+            else:
+                ret['status'] = 'invalid ops'
+        except Exception as e:
+            print(e)
+            ret['status'] = 'error'
+
+        web.header('content-type', 'text/json')
+        return json.dumps(ret)
 

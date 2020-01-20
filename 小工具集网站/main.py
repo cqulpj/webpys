@@ -14,6 +14,7 @@ urls = (
         '/', 'index',
         '/api/hexascii', 'hexascii',
         '/api/hexbase64', 'hexbase64',
+        '/api/code2hex', 'code2hex',
         )
 
 # 关闭调试（为了使用session）

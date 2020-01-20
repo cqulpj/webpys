@@ -36,6 +36,27 @@ def page_iter(cp, pages):
 
     return ret
 
+# 输入字符串的十六进制转换
+# 若输入字符串中包含中文字符，也可以当作汉字内码显示函数使用
+# 可选参数code指定汉字编码类型，可以为gbk、utf-8或unicode，默认为unicode
+# 输出转换后的十六进制数，字节间空格隔开
+# 注：要求输入参数类型为unicode
+def unicode2hex(src, code='unicode'):
+    # 先检测输入参数类型
+    if not isinstance(src, unicode):
+        return None
+
+    # 转换编码
+    if code in ['gbk', 'utf-8']:
+        ss = src.encode(code)
+    else:
+        ss = src
+
+    # 转换成hex形式
+    sh = [hex(ord(i)).upper()[2:] for i in ss]
+    return ' '.join(sh)
+
+
 # 测试
 if __name__ == '__main__':
     print '(4,10)=>', page_iter(4, 10)
@@ -44,6 +65,12 @@ if __name__ == '__main__':
     print '(3,5)=>', page_iter(3,5)
     print '(7,8)=>', page_iter(7,8)
     print '(8,8)=>', page_iter(8,8)
+    print unicode2hex('hello')
+    print unicode2hex(u'hello world')
+    print unicode2hex(u'中国123')
+    print unicode2hex(u'中国123', 'gbk')
+    print unicode2hex(u'中国123', 'utf-8')
+    print unicode2hex(u'百度', 'utf-8')
 
 
 
